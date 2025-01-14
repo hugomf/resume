@@ -1,0 +1,16 @@
+version: '3.0'
+
+services:
+  rustapp:
+    container_name: rustapp
+    image: hugomf/rustapp:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - MONGO_URI=mongodb+srv://shop_admin_2020:tP7xXU0fRpSTz52r@cluster0.5qhec.mongodb.net/resume-dev?retryWrites=true&w=majority&appName=Cluster0
+      - DATABASE_NAME=resume-dev
+      - PORT=3000
+    restart: always
+    ports:
+      - "3000:3000"
