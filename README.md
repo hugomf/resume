@@ -7,7 +7,6 @@ A RESTful API built with Rust for managing resume data including experiences, sk
 - [Rust Resume Builder API](#rust-resume-builder-api)
   - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
-  - [Getting Started](#getting-started)
   - [API Documentation](#api-documentation)
     - [Experiences](#experiences)
     - [Skills](#skills)
@@ -22,15 +21,6 @@ Before you begin, ensure you have the following installed:
 - Docker
 - Docker Compose
 - Rust (optional, for local development)
-
-## Getting Started
-
-To run the application using Docker:
-
-```bash
-docker build -t rust-server .
-docker-compose up
-```
 
 The API will be available at `http://localhost:8000`
 
@@ -55,7 +45,14 @@ The API will be available at `http://localhost:8000`
 
 ## Development
 
-To run locally without Docker:
+- To run the application using Docker:
+
+```bash
+docker build -t rust-server .
+docker-compose up
+```
+
+- To run locally without Docker:
 
 1. Install Rust using [rustup](https://rustup.rs/)
 2. Clone the repository
