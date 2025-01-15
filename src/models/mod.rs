@@ -1,4 +1,6 @@
-pub(crate) mod category;
-pub(crate) mod skill;
+pub mod category;
+pub mod skill;
 pub mod experience;
-pub(crate) mod responsibility;
+pub mod responsibility;
+
+pub use experience::Experience;

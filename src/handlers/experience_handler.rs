@@ -7,7 +7,7 @@ use crate::services::experience_service::ExperienceService;
 use crate::errors::AppError;
 
 pub async fn create_experience(
-    service: web::Data<ExperienceService>,
+    service: web::Data<ExperienceService<'_, Experience>>,
     experience: web::Json<Experience>,
 ) -> Result<HttpResponse, AppError> {
     experience.0.validate().map_err(|err| {
@@ -21,7 +21,7 @@ pub async fn create_experience(
 }
 
 pub async fn get_experiences(
-    service: web::Data<ExperienceService>
+    service: web::Data<ExperienceService<'_, Experience>>
 ) -> Result<HttpResponse, AppError> {
     println!("get_experiences");
     service.get_experiences()
@@ -31,7 +31,7 @@ pub async fn get_experiences(
 }
 
 pub async fn get_experience(
-    service: web::Data<ExperienceService>,
+    service: web::Data<ExperienceService<'_, Experience>>,
     id: web::Path<String>
 ) -> Result<HttpResponse, AppError> {
     service.get_experience(&id)
@@ -44,7 +44,7 @@ pub async fn get_experience(
 }
 
 pub async fn update_experience(
-    service: web::Data<ExperienceService>,
+    service: web::Data<ExperienceService<'_, Experience>>,
     id: web::Path<String>,
     experience: web::Json<Experience>,
 ) -> Result<HttpResponse, AppError> {
@@ -59,7 +59,7 @@ pub async fn update_experience(
 }
 
 pub async fn delete_experience(
-    service: web::Data<ExperienceService>,
+    service: web::Data<ExperienceService<'_, Experience>>,
     id: web::Path<String>
 ) -> Result<HttpResponse, AppError> {
     service.delete_experience(&id)
@@ -69,7 +69,7 @@ pub async fn delete_experience(
 }
 
 pub async fn add_responsibility(
-    service: web::Data<ExperienceService>,
+    service: web::Data<ExperienceService<'_, Experience>>,
     id: web::Path<String>,
     responsibility: web::Json<Responsibility>,
 ) -> Result<HttpResponse, AppError> {
@@ -84,7 +84,7 @@ pub async fn add_responsibility(
 }
 
 pub async fn add_environment(
-    service: web::Data<ExperienceService>,
+    service: web::Data<ExperienceService<'_, Experience>>,
     id: web::Path<String>,
     environment: web::Json<Skill>,
 ) -> Result<HttpResponse, AppError> {

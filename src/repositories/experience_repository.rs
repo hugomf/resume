@@ -1,23 +1,22 @@
+use async_trait::async_trait;
 use mongodb::{Client, bson::doc, bson::oid::ObjectId, Collection};
-use crate::models::experience::Experience;
 use crate::errors::AppError;
+use crate::repositories::repository::Repository;
 use futures::TryStreamExt;
 
 #[derive(Clone)]
-pub struct ExperienceRepository {
-    pub collection: Collection<Experience>,
+pub struct ExperienceRepository<'a, T> where T: Send + Sync {
+    pub collection: Collection<T>,
+    _marker: std::marker::PhantomData<&'a ()>,
 }
 
-impl ExperienceRepository {
-    #[allow(dead_code)]
-    pub fn new(client: &Client, db_name: &str, collection_name: &str) -> Self {
-        let db = client.database(&db_name);
-        let collection = db.collection(collection_name);
-        ExperienceRepository { collection }
-    }
-
-    pub async fn create_experience(&self, experience: Experience) -> Result<(), AppError> {
-        self.collection.insert_one(experience)
+#[async_trait]
+impl<'a, T> Repository<'a, T> for ExperienceRepository<'a, T> 
+where 
+    T: Send + Sync + 'static + serde::Serialize + serde::de::DeserializeOwned + Unpin,
+    'a: 'static {
+    async fn create(&self, item: T) -> Result<(), AppError> {
+        self.collection.insert_one(item)
             .await
             .map_err(|e| AppError::DatabaseError(format!(
                 "Failed to create experience: {}", e
@@ -25,8 +24,7 @@ impl ExperienceRepository {
         Ok(())
     }
 
-    pub async fn find_all(&self) -> Result<Vec<Experience>, AppError> {
-        println!("get_experiences in repo");
+    async fn find_all(&self) -> Result<Vec<T>, AppError> {
         let filter = doc! {};
         let mut cursor = self.collection.find(filter)
             .await
@@ -53,7 +51,7 @@ impl ExperienceRepository {
         Ok(experiences)
     }
 
-    pub async fn get_experience(&self, id: &ObjectId) -> Result<Option<Experience>, AppError> {
+    async fn get(&self, id: &ObjectId) -> Result<Option<T>, AppError> {
         let filter = doc! { "_id": id };
         self.collection.find_one(filter)
             .await
@@ -62,9 +60,9 @@ impl ExperienceRepository {
             )))
     }
 
-    pub async fn update_experience(&self, id: &ObjectId, experience: Experience) -> Result<(), AppError> {
+    async fn update(&self, id: &ObjectId, item: T) -> Result<(), AppError> {
         let filter = doc! { "_id": id };
-        self.collection.replace_one(filter, experience)
+        self.collection.replace_one(filter, item)
             .await
             .map_err(|e| AppError::DatabaseError(format!(
                 "Failed to update experience with id {}: {}", id, e
@@ -72,7 +70,7 @@ impl ExperienceRepository {
         Ok(())
     }
 
-    pub async fn delete_experience(&self, id: &ObjectId) -> Result<(), AppError> {
+    async fn delete(&self, id: &ObjectId) -> Result<(), AppError> {
         let filter = doc! { "_id": id };
         self.collection.delete_one(filter)
             .await
@@ -80,5 +78,47 @@ impl ExperienceRepository {
                 "Failed to delete experience with id {}: {}", id, e
             )))?;
         Ok(())
+    }
+
+}
+
+impl<'a, T> ExperienceRepository<'a, T> where T: Send + Sync {
+    pub async fn add_responsibility(&self, id: &ObjectId, responsibility: crate::models::responsibility::Responsibility) -> Result<(), AppError> {
+        let filter = doc! { "_id": id };
+        let update = doc! { "$push": { "responsibilities": mongodb::bson::to_bson(&responsibility)
+            .map_err(|e| AppError::DatabaseError(format!(
+                "Failed to serialize responsibility: {}", e
+            )))? }};
+        
+        self.collection.update_one(filter, update)
+            .await
+            .map_err(|e| AppError::DatabaseError(format!(
+                "Failed to add responsibility to experience {}: {}", id, e
+            )))?;
+        Ok(())
+    }
+
+    pub async fn add_environment(&self, id: &ObjectId, environment: crate::models::skill::Skill) -> Result<(), AppError> {
+        let filter = doc! { "_id": id };
+        let update = doc! { "$push": { "environments": mongodb::bson::to_bson(&environment)
+            .map_err(|e| AppError::DatabaseError(format!(
+                "Failed to serialize environment: {}", e
+            )))? }};
+        
+        self.collection.update_one(filter, update)
+            .await
+            .map_err(|e| AppError::DatabaseError(format!(
+                "Failed to add environment to experience {}: {}", id, e
+            )))?;
+        Ok(())
+    }
+    #[allow(dead_code)]
+    pub fn new(client: &Client, db_name: &str, collection_name: &str) -> ExperienceRepository<'static, T> {
+        let db = client.database(db_name);
+        let collection = db.collection(collection_name);
+        ExperienceRepository { 
+            collection,
+            _marker: std::marker::PhantomData
+        }
     }
 }

@@ -1,19 +1,12 @@
 use actix_web::{App, HttpServer, middleware::Logger};
 use actix_web::web::Data;
-use env::load_env;
+use rust_server::env::load_env;
 use mongodb::{Client, options::ClientOptions};
 
-use crate::api::configure_routes;
-use crate::repositories::experience_repository::ExperienceRepository;
-use crate::services::experience_service::ExperienceService;
-
-mod models;
-mod repositories;
-mod services;
-mod handlers;
-mod api;
-mod env;
-mod errors;
+use rust_server::api::configure_routes;
+use rust_server::repositories::experience_repository::ExperienceRepository;
+use rust_server::services::experience_service::ExperienceService;
+use rust_server::models::Experience;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -37,7 +30,7 @@ async fn main() -> std::io::Result<()> {
     })?;
 
     // Create repository and service instances
-    let experience_repo = ExperienceRepository::new(&client, &mongo_db, "experience");
+    let experience_repo: ExperienceRepository<'_, Experience> = ExperienceRepository::new(&client, &mongo_db, "experience");
     let experience_service = ExperienceService::new(experience_repo);
 
     println!("Server: [{}]", env.app_name);

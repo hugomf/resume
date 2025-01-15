@@ -1,6 +1,7 @@
 use mongodb::{Client, bson::doc};
 use tokio_test::block_on;
 use rust_server::repositories::experience_repository::ExperienceRepository;
+use rust_server::repositories::repository::Repository;
 use rust_server::models::experience::Experience;
 
 #[test]
@@ -27,7 +28,7 @@ fn test_find_all() {
             responsibilities: vec![],
             environment: vec![],
         };
-        repo.create_experience(test_experience.clone()).await.unwrap();
+        repo.create(test_experience.clone()).await.unwrap();
         
         // Test find_all
         let result = repo.find_all().await;

@@ -7,8 +7,8 @@ lazy_static! {
 }
 use serde::{Deserialize, Serialize};
 use validator::Validate;
-use crate::models::skill::Skill;
-use crate::models::responsibility::Responsibility;
+use super::skill::Skill;
+use super::responsibility::Responsibility;
 
 #[derive(Debug, Serialize, Deserialize, Validate, Clone)]
 pub struct Experience {
