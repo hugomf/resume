@@ -1,10 +1,22 @@
 # Rust Resume Builder API
 
+## Project Purpose
+
+This API serves as the backbone for a modern resume building platform, enabling users to:
+
+- Create and manage professional profiles with rich details about their work history
+- Organize skills and experiences in a structured way
+- Build dynamic, up-to-date resumes tailored for different job opportunities
+- Showcase career progression and achievements effectively
+
+By providing a robust and efficient way to manage resume data, this API helps job seekers present their best professional selves while giving employers access to well-structured candidate information
+
 A RESTful API built with Rust for managing resume data including experiences, skills, and responsibilities.
 
 ## Table of Contents
 
 - [Rust Resume Builder API](#rust-resume-builder-api)
+  - [Project Purpose](#project-purpose)
   - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
   - [API Documentation](#api-documentation)
