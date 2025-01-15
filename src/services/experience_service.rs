@@ -12,6 +12,7 @@ pub struct ExperienceService {
 }
 
 impl ExperienceService {
+    #[allow(dead_code)]
     pub fn new(repository: ExperienceRepository) -> Self {
         Self { repository }
     }

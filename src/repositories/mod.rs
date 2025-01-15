@@ -1,2 +1,2 @@
 
-pub(crate) mod experience_repository;
+pub mod experience_repository;
